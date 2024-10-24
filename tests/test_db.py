@@ -1,8 +1,8 @@
-from sqlalchemy import create_engine, select
-
-from fast_zero.models import User, table_registry
-
 from dataclasses import asdict
+
+from sqlalchemy import select
+
+from fast_zero.models import User
 
 
 def test_create_user(session, mock_db_time):
