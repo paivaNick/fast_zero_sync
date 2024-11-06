@@ -10,9 +10,11 @@ from sqlalchemy.pool import StaticPool
 from fast_zero.app import app
 from fast_zero.database import get_session
 from fast_zero.models import User, table_registry
-
+from fast_zero.security import get_password_hash
 
 # fixture para nao ficar colocando TestClient em cada test
+
+
 @pytest.fixture
 def client(session):
     def get_session_override():
@@ -46,12 +48,16 @@ def session():
 
 @pytest.fixture
 def user(session):
+    pwd = 'senha123'
     user = User(
-        username='Romarinho', email='romarinho@socker.com', password='senha123'
+        username='Romarinho',
+        email='romarinho@socker.com',
+        password=get_password_hash(pwd),
     )
     session.add(user)
     session.commit()
     session.refresh(user)
+    user.clean_password = pwd  # Monkey Patch
     return user
 
 
@@ -71,3 +77,14 @@ def _mock_db_time(*, model, time=datetime(2024, 1, 1)):
 @pytest.fixture
 def mock_db_time():
     return _mock_db_time
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        'auth/token',
+        data={'username': user.email, 'password': user.clean_password},
+    )
+    token = response.json().get('access_token')
+    assert token is not None, 'token not found in the response'
+    return token

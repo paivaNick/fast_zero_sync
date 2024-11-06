@@ -20,3 +20,12 @@ class UserPublic(BaseModel):
 
 class UserList(BaseModel):
     users: list[UserPublic]
+
+
+class Token(BaseModel):
+    access_token: str  # gera o jwt
+    token_type: str  # tipo do token
+
+
+class TokenData(BaseModel):
+    username: str | None = None
