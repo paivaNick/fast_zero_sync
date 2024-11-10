@@ -108,6 +108,24 @@ def test_read_nonexistent_user(client):
     assert response.json() == {'detail': 'User not Found'}
 
 
+def test_update_user_with_wrong_user(client, user, other_user, token):
+    response = client.put(
+        f'/users/{other_user.id}',
+        json={'username': 'test', 'password': '123', 'email': 'test@test.com'},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permissions'}
+
+
+def test_delete_user_with_wrong_user(client, user, other_user, token):
+    response = client.delete(
+        f'/users/{other_user.id}', headers={'Authorization': f'Bearer {token}'}
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Not enough permissions'}
+
+
 def test_update_nonexistent_user(client, token):  # pragma no-cover
     response = client.put(
         '/users/898',
