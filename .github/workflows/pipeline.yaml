@@ -26,6 +26,8 @@ jobs:
       - name: instalar o poetry
         run: pipx install poetry
 
+      - name: configurando o path
+        run: pipx ensurepath
       - name: instalando dependencias
         run: poetry install
 
